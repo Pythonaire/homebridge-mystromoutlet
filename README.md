@@ -23,3 +23,6 @@ where
 - "refreshSeconds" tells the plugin how often to refresh data from the plug. Default is 10 seconds.
 
 See the file config-example.json for a minimum configuration.
+
+## Todo
+- Add to npm.js
