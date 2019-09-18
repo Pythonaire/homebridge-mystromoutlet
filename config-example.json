@@ -3,9 +3,9 @@
     "name": "Homebridge-dev",
     "username": "AA:22:3D:E3:CE:30",
     "port": 51826,
-    "pin": "031-45-155"
+    "pin": "031-45-154"
   },
-  "description": "Homebridge dev env",
+  "description": "Example config for homebridge-mystromoutlet",
   "ports": {
     "start": 52100,
     "end": 52150,
@@ -14,8 +14,8 @@
   "accessories": [
    {
       "accessory": "MyStromOutlet",
-      "name": "TestSchalter",
-      "url": "http://192.168.44.22",
+      "name": "Outlet name",
+      "url": "http://192.168.12.34",
       "refreshSeconds": 5
    }
   ],

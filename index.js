@@ -6,7 +6,7 @@ var powerLoggingService;
 var informationService;
 var power = 0;
 var ExtraPersistedData = {};
-var totalPower = 10;
+var totalPower = 0;
 var refresh = 0;
 var lastReset = 0;
 
