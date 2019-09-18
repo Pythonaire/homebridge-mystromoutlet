@@ -6,8 +6,13 @@
 	"keywords": [
 		"homebridge-plugin"
 	],
-	"repository": null,
-	"bugs": null,
+	"repository": {
+    	"type": "git",
+    	"url": "git+https://github.com/t-j-n/homebridge-mystromoutlet.git"
+    },
+	"bugs": {
+		"url": "https://github.com/t-j-n/homebridge-mystromoutlet/issues"
+	},
 	"engines": {
 		"node": ">=0.12.0",
 		"homebridge": ">=0.2.0"
