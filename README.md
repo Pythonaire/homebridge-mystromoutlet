@@ -3,7 +3,7 @@ A simple Homebridge plugin for MyStrom outlets providing data to Elgato Eve app 
 
 ## Installation
 1. Install homebridge: `npm install -g homebridge`
-2. Install this plugin: `npm install -g homebridge-mystromoutlet
+2. Install this plugin: `npm install -g homebridge-mystromoutlet`
 
 ## Configuration
 
