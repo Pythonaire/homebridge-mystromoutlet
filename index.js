@@ -95,7 +95,6 @@ function MyStromOutlet(log, config) {
  		this.ExtraPersistedData = this.powerLoggingService.getExtraPersistedData();
  		if (this.ExtraPersistedData != undefined) {
  			totalPower = this.ExtraPersistedData.totalPower;
-// 			this.log("Power = %f, totalPower = %f", power, totalPower); 		
  		}
 		callback(null, totalPower);
 	});
@@ -104,7 +103,6 @@ function MyStromOutlet(log, config) {
 		.on('set', (value, callback) => {
 			this.totalPower = 0;
 			this.lastReset = value;
-// 			this.log("totalPower = %f, lastReset = %d", this.totalPower, this.lastReset);
 			this.powerLoggingService.setExtraPersistedData({ totalPower: this.totalPower, lastReset: this.lastReset });
 			callback(null);
 		})
@@ -135,30 +133,23 @@ function MyStromOutlet(log, config) {
 	);
 
 	emitter.on("longpoll", function(data) {
-// 		self.log("longpoll emitted at %s, with data %j", Date.now(), data);
 		var totalPowerTemp = 0;
 
 		var json = JSON.parse(data);
 		if (self.powerLoggingService.isHistoryLoaded()) {
-// 			self.log("HISTORY LOADED, totalPowerTemp = %f, json.power= %f, refresh = %s", totalPowerTemp, json.power, refresh);
 			self.ExtraPersistedData = self.powerLoggingService.getExtraPersistedData();
 			if (self.ExtraPersistedData != undefined && self.ExtraPersistedData.totalPower != undefined) {
-// 				self.log("self.ExtraPersistedData = " + JSON.stringify(self.ExtraPersistedData));
 				self.totalPower = self.ExtraPersistedData.totalPower + totalPowerTemp + json.power * refresh / 3600 / 1000;
-// 				self.log("totalPower: %f, , lastReset: %s",  totalPower, self.ExtraPersistedData.lastReset);
 				self.powerLoggingService.setExtraPersistedData({ totalPower: totalPower, lastReset: self.ExtraPersistedData.lastReset });
 			}
 			else {
-// 				self.log("self.ExtraPersistedData is undefined");
 				totalPower = totalPowerTemp + json.power * refresh / 3600 / 1000;
 				self.powerLoggingService.setExtraPersistedData({ totalPower: totalPower, lastReset: 0 });
-// 				self.log("totalPower: %f, , lastReset: %s",  totalPower, self.ExtraPersistedData.lastReset);
 			}
 			totalPowerTemp = 0;
 
 		}
 		else {
-// 			self.log("HISTORY NOT LOADED");
 			totalPowerTemp = totalPowerTemp + json.power * refresh / 3600 / 1000;
 			totalPower = totalPowerTemp;
 		}
@@ -170,38 +161,29 @@ function MyStromOutlet(log, config) {
 
 // getState
 MyStromOutlet.prototype.getState = function(callback) {
-// 	this.log("getState()");
-	
 	request.get(
 		{url: this.url + "/report"},
 		function(err, response, body) {
 			if(!err && response.statusCode == 200) {
-// 				this.log("body = %s", body);
 				var json = JSON.parse(body);
 				callback( null, json.relay);
 			} else {
 				this.log("Error: %s", err);
-				callback(err);
 			}
 		}.bind(this)
 	);
 }
 
 MyStromOutlet.prototype.getpowerConsumption = function(callback) {
-// 	this.log("getpowerConsumption()");
-	
 	request.get(
 		{url: this.url + "/report"},
 		function(err, response, body) {
 			if(!err && response.statusCode == 200) {
-// 				this.log("body = %s", body);
 				var json = JSON.parse(body);
 				power = json.power;
-// 				this.log("power = %f", power);
 				callback( null, Math.round(json.power));
 			} else {
 				this.log("Error: %s", err);
-				callback(err);
 			}
 		}.bind(this)
 	);
@@ -210,17 +192,14 @@ MyStromOutlet.prototype.getpowerConsumption = function(callback) {
 
 // set State
 MyStromOutlet.prototype.setState = function(state, callback) {
-// 	this.log("setState(%s)", state);
+	let requestUrl = this.url + "/relay?state=" + (state ? "1" : "0");
 	
 	request.get(
-		{url: this.url + "/toggle"},
+		{url: requestUrl},
 		function(err, response, body) {
 			if(!err && response.statusCode == 200) {
-// 				this.log("body = %s", body);
-				var json = JSON.parse(body);
-				callback(null, json.relay);
+				callback();
 			} else {
-				this.log("Error setting state: %s", err);
 				callback(err);
 			}
 		}.bind(this)
