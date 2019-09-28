@@ -58,7 +58,6 @@ module.exports = function(homebridge) {
 	ResetTotal.UUID = 'E863F112-079E-48FF-8F27-9C2605A29F52';
 	inherits(ResetTotal, Characteristic);
 
-	
 	homebridge.registerAccessory("homebridge-mystromoutlet", "MyStromOutlet", MyStromOutlet)
 }
 
@@ -71,25 +70,26 @@ function MyStromOutlet(log, config) {
 	this.url = config["url"];
 	refresh = config["refreshSeconds"] * 1000 || 10000;
 
+
 	this.informationService = new Service.AccessoryInformation();
 	this.informationService
 		.setCharacteristic(Characteristic.Name, this.name)
 		.setCharacteristic(Characteristic.Manufacturer, "myStrom AG")
 		.setCharacteristic(Characteristic.Model, "WLAN Switch")
 		.setCharacteristic(Characteristic.SerialNumber, this.name);
-	
+
 	this.service = new Service.Outlet(this.name);
 
 	this.service.getCharacteristic(Characteristic.On)
 	.on('get', this.getState.bind(this))
 	.on('set', this.setState.bind(this));
-	
+
 	this.service.getCharacteristic(Characteristic.OutletInUse)
 	.on('get', this.getState.bind(this));
-	
+
 	this.service.getCharacteristic(CurrentpowerConsumption)
 	.on('get', this.getpowerConsumption.bind(this));
-	
+
 	this.service.getCharacteristic(totalPowerConsumption)
 	.on('get',  (callback) => {
  		this.ExtraPersistedData = this.powerLoggingService.getExtraPersistedData();
@@ -98,7 +98,7 @@ function MyStromOutlet(log, config) {
  		}
 		callback(null, totalPower);
 	});
-	
+
 	this.service.getCharacteristic(ResetTotal)
 		.on('set', (value, callback) => {
 			this.totalPower = 0;
@@ -112,8 +112,7 @@ function MyStromOutlet(log, config) {
 				this.lastReset = this.ExtraPersistedData.lastReset;
 			callback(null, this.lastReset);
 		});
-	
-	
+
 	this.powerLoggingService = new FakeGatoHistoryService("energy", this, {storage: 'fs'});
 
 
@@ -122,12 +121,11 @@ function MyStromOutlet(log, config) {
 		request.get(
 			{url: self.url + "/report"},
 			function(err, response, body) {
-				if(err || response.statusCode != 200) {
-					self.log("Error: %s", err);
+				if(!err && response.statusCode == 200) {
+					done(err, body);
 				}
-				done(err, body);
 			}
-		);	
+		);
 	},
 	{ longpolling: true, interval: refresh }
 	);
@@ -167,8 +165,8 @@ MyStromOutlet.prototype.getState = function(callback) {
 			if(!err && response.statusCode == 200) {
 				var json = JSON.parse(body);
 				callback( null, json.relay);
-			} else {
-				this.log("Error: %s", err);
+//			} else {
+//				this.log("Error: %s", err);
 			}
 		}.bind(this)
 	);
@@ -182,8 +180,8 @@ MyStromOutlet.prototype.getpowerConsumption = function(callback) {
 				var json = JSON.parse(body);
 				power = json.power;
 				callback( null, Math.round(json.power));
-			} else {
-				this.log("Error: %s", err);
+//			} else {
+//				this.log("Error: %s", err);
 			}
 		}.bind(this)
 	);
@@ -193,18 +191,17 @@ MyStromOutlet.prototype.getpowerConsumption = function(callback) {
 // set State
 MyStromOutlet.prototype.setState = function(state, callback) {
 	let requestUrl = this.url + "/relay?state=" + (state ? "1" : "0");
-	
+
 	request.get(
 		{url: requestUrl},
 		function(err, response, body) {
 			if(!err && response.statusCode == 200) {
 				callback();
-			} else {
-				callback(err);
+//			} else {
+//				callback(err);
 			}
 		}.bind(this)
 	);
-	
 }
 
 MyStromOutlet.prototype.getServices = function() {
